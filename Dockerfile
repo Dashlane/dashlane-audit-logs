@@ -13,6 +13,7 @@ RUN apt-get update && \
 RUN groupadd -g 61000 user && useradd -g 61000 -l -M -s /bin/false -u 61000 user
 
 ENV DCLIOUTPUT="stdout"
+ENV DCLIFLUENTBITPATH="/opt/fluent-bit.conf"
 
 USER user
 
