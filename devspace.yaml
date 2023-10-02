@@ -16,12 +16,15 @@ hooks:
       curl https://raw.githubusercontent.com/fluent/fluent-bit/master/install.sh | sh
       curl https://github.com/Dashlane/dashlane-cli/releases/download/v1.14.2/dcli-linux-x64 -L > /usr/local/bin/dcli
       chmod a+x /usr/local/bin/dcli
-      cp src/fluentbit-default.conf /opt/fluent-bit.conf
-      chmod +x src/entrypoint.sh
     container:
       imageSelector: ubuntu:22.04
     events: ["before:initialSync:my-dev"]
-
+  - command: | 
+      cp ./src/fluentbit-default.conf /opt/fluent-bit.conf
+      chmod +x ./src/entrypoint.sh
+    container:
+      imageSelector: ubuntu:22.04
+    events: ["after:initialSync:my-dev"]
 
 dev:
   my-dev:
