@@ -12,8 +12,9 @@ RUN apt-get update && \
 
 RUN groupadd -g 61000 user && useradd -g 61000 -l -M -s /bin/false -u 61000 user
 
-ENV DCLIOUTPUT="stdout"
-ENV DCLIFLUENTBITPATH="/opt/fluent-bit.conf"
+ENV DASHLANE_CLI_OUTPUT="stdout"
+ENV DASHLANE_CLI_FLUENTBIT_CONF="/opt/fluent-bit.conf"
+ENV DASHLANE_CLI_RUN_DELAY=60
 
 USER user
 
