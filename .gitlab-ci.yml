@@ -10,7 +10,7 @@ include:
   - template: Security/Secret-Detection.gitlab-ci.yml
   - template: Security/Container-Scanning.gitlab-ci.yml
 
-docker-image:
+build:
   stage: build
   variables:
     CACHE_ENABLED: "true"
