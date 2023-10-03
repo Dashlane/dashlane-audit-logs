@@ -2,16 +2,9 @@ include:
   - project: 'dashlane/security/ci-templates/ci-security-job'
     ref: master
     file: '/build/oci_image_builder.yml'
-
-variables:
-  CONTAINER_SCANNING_DISABLED: "true"
-  LICENSE_MANAGEMENT_DISABLED: "true"
-  BROWSER_PERFORMANCE_DISABLED: "true"
-  CODE_QUALITY_DISABLED: "true"
-  DAST_DISABLED: "true"
-  REVIEW_DISABLED: "true"
-  ROLLOUT_STATUS_DISABLED: "true"
-  TEST_DISABLED: "true"
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Security/Container-Scanning.gitlab-ci.yml
 
 build:
   stage: build
@@ -21,3 +14,6 @@ build:
     BUILDER_DOCKERFILE: "${CI_PROJECT_DIR}/Dockerfile"
     IMAGE_NAME: "$CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG"
     IMAGE_TAG: "$CI_COMMIT_SHA"
+
+# docker-hub:
+#   stage: deploy

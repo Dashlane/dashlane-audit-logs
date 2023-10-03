@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dashlane-audit-logs.fullname" . }}
+  labels:
+    {{- include "dashlane-audit-logs.labels" . | nindent 4 }}
+data:
+  fluent-bit.conf: |
+    [INPUT]
+      Name  stdin
+      Tag   stdin
+
+    {{ .Values.config.fluentbit.output | nindent 4 }}
