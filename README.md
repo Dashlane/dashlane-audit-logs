@@ -1,6 +1,6 @@
 # dashlane-audit-logs-v2
 
-The solution we offer in this article allows you to run a instance that will pull your Dashlane businnes logs and send them on the destination of you choice using the Fluentbit service. At the moment, we provide configurations for the following solutions:
+The solution we offer in this article allows you to run a instance that will pull your Dashlane business logs and send them on the destination of you choice using the Fluentbit service. At the moment, we provide configurations for the following solutions:
 * Azure logs analytics workspace
 * Azure blob storage
 * AWS S3
@@ -21,7 +21,7 @@ az container create -g resource-group --name dashlane-audit-logs --image sgravis
 ```
 Specify your resource groupe name and replace the "XXX" by your credentials information.
 
-Running this command will create a simple  Azure container instance that pull the logs and print them on the stdout steam of the instance.
+Running this command will create a simple  Azure container instance that pull the logs and print them on the stdout stream of the instance.
 
 To specify a custom destination, you need to update the fluentbit configuration file as indicated in the following sections.
 
