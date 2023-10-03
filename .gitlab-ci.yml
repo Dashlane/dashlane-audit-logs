@@ -1,7 +1,3 @@
-stages:
-  - build
-  # - deploy
-
 include:
   - project: 'dashlane/security/ci-templates/ci-security-job'
     ref: master
