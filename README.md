@@ -1,92 +1,112 @@
 # dashlane-audit-logs-v2
 
+The solution we offer in this article allows you to run a instance that will pull your Dashlane businnes logs and send them on the destination of you choice using the Fluentbit service. At the moment, we provide configurations for the following solutions:
+* Azure logs analytics workspace
+* Azure blob storage
+* AWS S3
+* Elasticsearch 
+
+## Prerequisites
+
+In order to manage the Dashlane audit logs of your business account, you need to generate the credentials that will be used to pull the logs. The procedure can be found here: https://dashlane.github.io/dashlane-cli/business
 
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Running an instance
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### Azure container instance
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.dashlane.com/dashlane/security/lab/dashlane-audit-logs-v2.git
-git branch -M main
-git push -uf origin main
+az container create -g resource-group --name dashlane-audit-logs --image sgravis/dcli-log-catcher:0.2 -e DASHLANE_TEAM_UUID=XXX  DASHLANE_TEAM_ACCESS_KEY=XXX DASHLANE_TEAM_SECRET_KEY=XXX
+```
+Specify your resource groupe name and replace the "XXX" by your credentials information.
+
+Running this command will create a simple  Azure container instance that pull the logs and print them on the stdout steam of the instance.
+
+To specify a custom destination, you need to update the fluentbit configuration file as indicated in the following sections.
+
+
+### Kubernetes
+
+Work in progress
+
+## Sending logs to Azure
+### Log analytics workspace
+
+If you want to send your logs to an Azure log analytics workspace, you need to retrieve its workspace ID and shared access key. If you are using an Azure container instance, you need to pass those values as an environment variables like this: 
+```
+az container create -g resource-group --name dashlane-audit-logs --image sgravis/dcli-log-catcher:0.2 -e DASHLANE_TEAM_UUID=XXX  DASHLANE_TEAM_ACCESS_KEY=XXX DASHLANE_TEAM_SECRET_KEY=XXX LAW_ID=XXX LAW_KEY=XXX
 ```
 
-## Integrate with your tools
+Then you need to update your Fluentbit configuration file by adding the following output configuration
 
-- [ ] [Set up project integrations](https://gitlab.dashlane.com/dashlane/security/lab/dashlane-audit-logs-v2/-/settings/integrations)
+```
+[OUTPUT]
+    Name        azure
+    Match       *
+    Customer_ID ${LAW_ID}
+    Shared_Key  ${LAW_KEY}
+```
 
-## Collaborate with your team
+Todo: indicate how to overwrite the config file
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
 
-## Test and Deploy
+### Azure blob storage
 
-Use the built-in continuous integration in GitLab.
+If you want to send your logs to an Azure storage account, you need to retrieve its access key. If you are using an Azure container instance, you need to pass this value as an environment variables like this: 
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+```
+az container create -g resource-group --name dashlane-audit-logs --image sgravis/dcli-log-catcher:0.2 -e DASHLANE_TEAM_UUID=XXX  DASHLANE_TEAM_ACCESS_KEY=XXX DASHLANE_TEAM_SECRET_KEY=XXX STORAGE_ACCOUNT_KEY=XXX
+```
 
-***
 
-# Editing this README
+Then you need to update your Fluentbit configuration file by adding the following output configuration
+```
+[OUTPUT]
+    name                  azure_blob
+    match                 *
+    account_name          dashlaneauditlogs
+    shared_key            ${STORAGE_ACCOUNT_KEY}
+    container_name        fluentbit
+    auto_create_container on
+    tls                   on
+    blob_type             blockblob
+```
+In this configuration, we are telling Fluentbit to send the logs on a storage account named "dashlaneauditlogs" in the container "fluentbit". Be sure to validate that your Azure configuration matches the Fluentbit output configuration.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Note: the "blob_type" configuration specifies to create an entry for every log entry on the storage account, which facilitates the log their manipulation for eventual post-processing treatment.
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-## Name
-Choose a self-explaining name for your project.
+Todo: indicate how to overwrite the config file
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## Sending logs to AWS
+If you want to send your logs to an AWS S3, you need to pass your credentials as environment variables;
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+```
+export AWS_ACCESS_KEY_ID=XXX
+export AWS_SECRET_ACCESS_KEY=XXX
+```
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Then you need to update your Fluentbit configuration file by adding the following output configuration:
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+```
+[OUTPUT]
+     Name s3
+     Match *
+     bucket techweek-secu-audit-logs
+     region eu-west-1
+     store_dir /tmp/
+     use_put_object On
+     total_file_size 1M
+     upload_timeout 10m
+```
+// aws conf still in progress
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+## Sending logs to Elasticsearch
+Work in progress
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+## Notes:
+All configuration are provided as is and designed to work out of the box. If you want customize them, you can consult the Fluentbit documentation: https://docs.fluentbit.io/manual/pipeline/outputs
