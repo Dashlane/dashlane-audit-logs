@@ -1,15 +1,33 @@
 # dashlane-audit-logs-v2
 
-The solution we offer in this article allows you to run a instance that will pull your Dashlane business logs and send them on the destination of you choice using the Fluentbit service. At the moment, we provide configurations for the following solutions:
-* Azure logs analytics workspace
+This projects allows you to retrieve your Dashlane's audit log and send them in the SIEM or storage solution of your choice, using Fluentbit. At the moment, we provide out of the box configurations for the following solutions:
+* Azure log analytics workspace
 * Azure blob storage
 * Splunk
 * Elasticsearch
+
+This list is not restrictive, as others destination can be used. You can find the list of supported platforms on Fluentbit's website: https://docs.fluentbit.io/manual/pipeline/outputs
 
 ## Prerequisites
 
 In order to manage the Dashlane audit logs of your business account, you need to generate the credentials that will be used to pull the logs. The procedure can be found here: https://dashlane.github.io/dashlane-cli/business
 
+## How does it work ?
+
+The Docker image provided leverages the Dashlane CLI tool that will pull the audit logs and send them in your SIEM of choice. By default, when running the image in a container, the logs from DAY-1 will be retrieved, and new logs will be pulled every minutes. To handle the logs, we included Fluentbit with this basic configuration file:
+
+```
+[INPUT]
+    Name  stdin
+    Tag   dashlane
+
+[OUTPUT]
+    Name  stdout
+    Match *
+    Format json_lines
+```
+
+To send the logs to a new destination, you need to enrich this configuration file template and add an **OUTPUT** section such as described on the follwing sections. To use your custom configuration file, you need to override the **$DASHLANE_CLI_FLUENTBIT_CONF** environment variable and set the path of your configuration file. The method to pass your file will depend on the plaform you use to run the image.
 
 ## Accessing the logs
 
@@ -23,10 +41,7 @@ This image can be ran on the platform of your choice. To make a simple test, you
 docker pull dashlane/audit-logs
 docker run -e DASHLANE_TEAM_UUID=XXX -e DASHLANE_TEAM_ACCESS_KEY=XXX -e DASHLANE_TEAM_SECRET_KEY=XXX -it dashlane/audit-logs:latest
 ```
-Running those commands will create a simple container that pull your business every minutes and and print them on the stdout of the container. If you want to customize the output and send the logs on a custom destination, you can edit the /opt/fluent-bit.conf file and specify the related OUTPUT configuration. You can find configurations examples later in this documentation.
-
-> It is possible to set an environment variable called **$DASHLANE_CLI_FLUENTBIT_CONF** and specify the path of a custom Fluentbit configuration file you want to use.
-
+Running those commands will create a simple container that pull your business every minutes and and print them on the stdout of the container.
 
 
 ### Kubernetes
@@ -34,7 +49,7 @@ Running those commands will create a simple container that pull your business ev
 Todo
 
 
-## Log destination configuration
+## SIEM configuration
 
 ### Azure Log analytics workspace
 
@@ -44,9 +59,9 @@ To send your Dashlane audit logs on Azure in a Log Analytics Workspace, you can 
 - Your Dashlane credentials
 - The Log Analytics Workspace ID and Shared Key
 
-> You can use the button below to start the deployment
-> 
-> ![Deploy to Azure](https://aka.ms/deploytoazurebutton)
+>**Click on the button to start the deployment**
+>
+>![Deploy to Azure](https://aka.ms/deploytoazurebutton)
 
 
 ### Azure blob storage
@@ -81,8 +96,7 @@ In this configuration, we are telling Fluentbit to send the logs on a storage ac
 
 > The "blob_type" configuration specifies to create a blob for every log entry on the storage account, which facilitates the logs manipulation for eventual post-processing treatment.
 
-
-Todo: indicate how to overwrite the config file
+> To pass your custom configuration file, you can create an Azure file share and use it when you create your container, as described here: https://learn.microsoft.com/en-us/azure/container-instances/container-instances-volume-azure-files
 
 
 ## Splunk
