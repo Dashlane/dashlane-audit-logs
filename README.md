@@ -27,13 +27,13 @@ The Docker image provided leverages the Dashlane CLI tool that will pull the aud
     Format json_lines
 ```
 
-To send the logs to a new destination, you need to enrich this configuration file template and add an **OUTPUT** section such as described on the follwing sections. To use your custom configuration file, you need to override the **$DASHLANE_CLI_FLUENTBIT_CONF** environment variable and set the path of your configuration file. The method to pass your file will depend on the plaform you use to run the image.
+To send the logs to a new destination, you need to enrich this configuration file template and add an **OUTPUT** section such as described on the following sections. To use your custom configuration file, you need to override the **$DASHLANE_CLI_FLUENTBIT_CONF** environment variable and set the path of your configuration file. The method to pass your file will depend on the plaform you use to run the image.
 
 ## Accessing the logs
 
 The first step to retrieve the audits logs is to run the custom image we provide and that can be found here: https://hub.docker.com/r/dashlane/audit-logs
 
-This image can be ran on the platform of your choice. To make a simple test, you can deploy it on Docker by doing so:
+This image can run on the platform of your choice. To make a simple test, you can deploy it with Docker by doing so:
 
 ### Running in Docker
 
@@ -53,11 +53,11 @@ Todo
 
 ### Azure Log analytics workspace
 
-To send your Dashlane audit logs on Azure in a Log Analytics Workspace, you can use the templates provided in this repository. The template will create a container instance that will automatically pull and run the collector image and send the logs in a **ContainerInstanceLog_CL** table in the Log Analytics Workspace of your choice. Before deploying the template you will have to prodive:
+To send your Dashlane audit logs on Azure in a Log Analytics Workspace, you can use the template provided in this repository. The template will create a container instance that will automatically pull and run the Dashlane Docker image and send the logs in a **ContainerInstanceLog_CL** table in the Log Analytics Workspace of your choice. Before deploying the template you will have to provide:
 
 - The location where you want your container to run (ex: "West Europe")
 - Your Dashlane credentials
-- The Log Analytics Workspace ID and Shared Key
+- Your Log Analytics Workspace ID and Shared Key
 
 >**Click on the button to start the deployment**
 >
@@ -74,10 +74,8 @@ If you want to send your logs to an Azure storage account, you need to have the 
 
 You can deploy the Dashlane Docker image in a container instance by running this simple command and be able to see the logs in the stdout of the container.
 ```
-az container create -g resource-group --name dashlane-audit-logs --image sgravis/dcli-log-catcher:0.2 -e DASHLANE_TEAM_UUID=XXX  DASHLANE_TEAM_ACCESS_KEY=XXX DASHLANE_TEAM_SECRET_KEY=XXX STORAGE_ACCOUNT_KEY=XXX
+az container create -g $RESOURCE_GORUP --name dashlane-audit-logs --image sgravis/dcli-log-catcher:0.2 -e DASHLANE_TEAM_UUID=XXX  DASHLANE_TEAM_ACCESS_KEY=XXX DASHLANE_TEAM_SECRET_KEY=XXX STORAGE_ACCOUNT_KEY=XXX
 ```
-
-> Don't forget to specify the resource group name where you want your instance to be deployed
 
 As a second step, you need to update your Fluentbit configuration file by adding the following output configuration
 ```
@@ -100,7 +98,7 @@ In this configuration, we are telling Fluentbit to send the logs on a storage ac
 
 
 ## Splunk
-If you want to send your log on Splunk, you need to create a HEC (HTTP Event Collector) on your Splunk instance. As an example we show here how to do it on a Splunk Cloud instance.
+If you want to send your logs on Splunk, you need to create a HEC (HTTP Event Collector) on your Splunk instance. As an example, we will show here how to create one on a Splunk Cloud instance.
 
 1- On the Splunk console, go to **"Settings / Data input"** and click on **Add New** in the **HTTP Event Collector** line.
 ![Add HEC](documentation/images/image.png)
@@ -118,7 +116,7 @@ If you want to send your log on Splunk, you need to create a HEC (HTTP Event Col
 You can make a test by running the following command:
 
 ```
-curl -k https://splunk-instance-url.com:8088/services/collector/event -H "Authorization: Splunk $SPLUNK_TOKEN" -d '{"event": "Dashlane Demo"}'
+curl -k https://$SPLUNK_URL.com:8088/services/collector/event -H "Authorization: Splunk $SPLUNK_TOKEN" -d '{"event": "Dashlane test"}'
 ```
 
 If all is working you should receive the following response:
@@ -139,14 +137,14 @@ Finally, to send your Dashlane logs to Splunk, you need to customize your Fluent
     splunk_token ${SPLUNK_TOKEN}
 ```
 
-Here, you just need to change your host to match yours and pass your Splunk token as an environment variable to the container. 
-Once the data are sent, you can query them by goind to the **"Apps/Search and reporting"** menu in the console and type this basic query in the search bar:
+Here, you just need to change the host parameter and indicate yours, and pass your Splunk token as an environment variable to the container. 
+Once the data are sent, you can query them by going to the **"Apps/Search and reporting"** menu in the console and type this basic query in the search bar:
 
 ```
 index=* sourcetype=*
 ```
 
-You should no be able to access your Dashlane audit logs:
+You should now be able to access your Dashlane audit logs:
 ![Splunk sample logs](documentation/images/image-4.png)
 
 
