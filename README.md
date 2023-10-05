@@ -1,4 +1,4 @@
-# dashlane-audit-logs-v2
+# Dashlane audit logs manager
 
 This projects allows you to retrieve your Dashlane's audit log and send them in the SIEM or storage solution of your choice, using Fluentbit. At the moment, we provide out of the box configurations for the following solutions:
 * Azure log analytics workspace
