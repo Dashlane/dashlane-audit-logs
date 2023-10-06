@@ -66,8 +66,7 @@ To send your Dashlane audit logs on Azure in a Log Analytics Workspace, you can 
 
 >**Click on the button to start the deployment**
 >
->![Deploy to Azure](https://aka.ms/deploytoazurebutton)
-
+> [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FDashlane%2Fdashlane-audit-logs%2Fmain%2FAzureTemplates%2FLog%20Analytics%20Workspace%2Fazuredeploy.json)
 
 ### Azure blob storage
 
