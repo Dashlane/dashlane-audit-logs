@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: sgravis/dcli-log-catcher
+  repository: dashlane/audit-logs
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.3"
+  tag: "latest"
 
 serviceAccount:
   # Specifies whether a service account should be created
