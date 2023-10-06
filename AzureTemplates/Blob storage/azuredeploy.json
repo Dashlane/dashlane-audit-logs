@@ -1,0 +1,147 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+            "description": "Location of the container. We recommend to use the same value as the \"Region\" parameter."
+            }
+        },
+        "Name": {
+            "type": "String",
+            "defaultValue": "dashlane-audit-logs-sa",
+            "allowedValues": ["dashlane-audit-logs-sa"]       
+        },
+        "Storage account name": {
+            "type": "String",
+            "defaultValue": ""      
+        },
+        "Share filename": {
+            "type": "String",
+            "defaultValue": "fluentbit-configuration"      
+        },
+        "File share path": {
+            "type": "String",
+            "defaultValue": "/dashlane",
+            "allowedValues": ["/dashlane"]       
+        },
+        "Dashlane team UUID": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Dashlane's team UUID"
+            },
+            "minLength": 36,
+            "maxLength": 36
+        },
+        "Dashlane team access key": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Dashlane's team access key"
+            },
+            "minLength": 16,
+            "maxLength": 16
+        },
+        "Dashlane team secret key": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Dashlane's team secret key"
+            },
+            "minLength": 64,
+            "maxLength": 64
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('Storage account name')]",
+            "location": "[parameters('location')]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(parameters('Storage account name'), '/default/', parameters('Share filename'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage account name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('Name')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', parameters('Storage account name'), 'default', parameters('Share filename'))]"
+            ],
+            "properties": {
+                "containers": [
+                    {
+                        "name": "[parameters('Name')]",
+                        "properties": {
+                            "image": "dashlane/audit-logs",
+                            "environmentVariables": [
+                                {
+                                    "name": "DASHLANE_TEAM_UUID",
+                                    "value": "[parameters('Dashlane team UUID')]"
+                                },
+                                {
+                                    "name": "DASHLANE_TEAM_ACCESS_KEY",
+                                    "value": "[parameters('Dashlane team access key')]"
+                                },
+                                {
+                                    "name": "DASHLANE_TEAM_SECRET_KEY",
+                                    "value": "[parameters('Dashlane team secret key')]"
+                                },
+                                {
+                                    "name": "DASHLANE_CLI_FLUENTBIT_CONF",
+                                    "value": "[concat(parameters('File share path'), '/fluent-bit.conf')]"
+                                },
+                                {
+                                    "name": "STORAGE_ACCOUNT_NAME",
+                                    "value": "[parameters('Storage account name')]"
+                                },
+                                {
+                                    "name": "ACCESS_KEY",
+                                    "value": "[listKeys(parameters('Storage account name'), '2019-06-01').keys[0].value]"
+                                }
+
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 1.5,
+                                    "cpu": 1
+                                }
+                            },
+                            "volumeMounts": [
+                                {
+                                    "name": "[parameters('Share filename')]",
+                                    "mountPath": "[parameters('File share path')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "osType": "Linux",
+                "volumes": [
+                    {
+                        "name": "[parameters('Share filename')]",
+                        "azureFile": {
+                            "shareName": "[parameters('Share filename')]",
+                            "readOnly": false,
+                            "storageAccountName": "[parameters('Storage account name')]",
+                            "storageAccountKey": "[listKeys(parameters('Storage account name'), '2019-06-01').keys[0].value]"
+                        }
+                    }
+                ],
+                "restartPolicy": "Always"
+            }
+        }
+    ],
+    "outputs": {}
+}

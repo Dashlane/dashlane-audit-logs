@@ -70,35 +70,44 @@ To send your Dashlane audit logs on Azure in a Log Analytics Workspace, you can 
 
 ### Azure blob storage
 
-If you want to send your logs to an Azure storage account, you need to have the following information:
+If you want to send your logs to an Azure storage account, you can use the deployment template we provide in this repository, which will:
+- Create a storage account and a file share to upload a custom Fluentbit configuration file
+- Create a container instance running the Docker image with your custom file
 
+You will need:
 - Your Dashlane credentials
-- Your storage account name
-- Your storage account access key
+- A custom Fluentbit configuration file
 
-You can deploy the Dashlane Docker image in a container instance by running this simple command and be able to see the logs in the stdout of the container.
-```
-az container create -g $RESOURCE_GORUP --name dashlane-audit-logs --image sgravis/dcli-log-catcher:0.2 -e DASHLANE_TEAM_UUID=XXX  DASHLANE_TEAM_ACCESS_KEY=XXX DASHLANE_TEAM_SECRET_KEY=XXX STORAGE_ACCOUNT_KEY=XXX
-```
+>**Click on the button to start the deployment**
+> [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FDashlane%2Fdashlane-audit-logs%2Fmain%2FAzureTemplates%2FBlob%20storage%2Fazuredeploy.json)
 
-As a second step, you need to update your Fluentbit configuration file by adding the following output configuration
+Once your container is deployed, copy the following configuration into a file called "fluent-bit.conf". 
 ```
+[INPUT]
+    Name  stdin
+    Tag   dashlane
+
+[OUTPUT]
+    Name  stdout
+    Match *
+    Format json_lines
+
 [OUTPUT]
     name                  azure_blob
     match                 *
-    account_name          dashlaneauditlogs
-    shared_key            ${STORAGE_ACCOUNT_KEY}
-    container_name        fluentbit
+    account_name          ${STORAGE_ACCOUNT_NAME}
+    shared_key            ${ACCESS_KEY}
+    container_name        audit-logs
     auto_create_container on
     tls                   on
     blob_type             blockblob
 ```
-
-In this configuration, we are telling Fluentbit to send the logs on a storage account named "dashlaneauditlogs" in the container "fluentbit". Be sure to validate that your Azure configuration matches the Fluentbit output configuration.
+Then upload in the storage account you just created. In the Azure Portal, go to **Storage accounts**, select the one you just created, go to **File shares**, select **fluentbit-configuration** and upload your configuration file.
 
 > The "blob_type" configuration specifies to create a blob for every log entry on the storage account, which facilitates the logs manipulation for eventual post-processing treatment.
 
-> To pass your custom configuration file, you can create an Azure file share and use it when you create your container, as described here: https://learn.microsoft.com/en-us/azure/container-instances/container-instances-volume-azure-files
+
+> The configuration provided above is meant to be working out of the box, but can be customized to suids your needs. You can refer to FLuentbit's documentation to see all available options: https://docs.fluentbit.io/manual/pipeline/outputs/azure_blob
 
 
 ## Splunk
