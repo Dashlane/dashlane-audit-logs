@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  dashlane-audit-logs:
+  - apiVersion: v2
+    appVersion: "0.3"
+    created: "2023-10-06T13:00:52.902413384Z"
+    description: A Helm chart for Kubernetes
+    digest: 02b6b43225ab86820181171977717cd82a026a2bfaf56000a119ad6cc3cb0a10
+    name: dashlane-audit-logs
+    type: application
+    urls:
+    - https://github.com/Dashlane/dashlane-audit-logs/releases/download/dashlane-audit-logs-0.3.0/dashlane-audit-logs-0.3.0.tgz
+    version: 0.3.0
+generated: "2023-10-06T13:00:52.902419484Z"
