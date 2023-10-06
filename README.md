@@ -14,7 +14,7 @@ In order to manage the Dashlane audit logs of your business account, you need to
 
 ## How does it work ?
 
-The Docker image provided leverages the Dashlane CLI tool that will pull the audit logs and send them in your SIEM of choice. By default, when running the image in a container, the logs from DAY-1 will be retrieved, and new logs will be pulled every minutes. To handle the logs, we included Fluentbit with this basic configuration file:
+The Docker image provided leverages the Dashlane CLI tool that will pull the audit logs and send them in your SIEM of choice. By default, when running the image in a container, the logs from DAY-1 will be retrieved, and new logs will be pulled every thirty minutes. To handle the logs, we included Fluentbit with this basic configuration file:
 
 ```
 [INPUT]
@@ -79,6 +79,7 @@ You will need:
 - A custom Fluentbit configuration file
 
 >**Click on the button to start the deployment**
+>
 > [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FDashlane%2Fdashlane-audit-logs%2Fmain%2FAzureTemplates%2FBlob%20storage%2Fazuredeploy.json)
 
 Once your container is deployed, copy the following configuration into a file called "fluent-bit.conf". 

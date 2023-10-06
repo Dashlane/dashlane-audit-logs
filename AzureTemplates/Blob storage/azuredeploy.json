@@ -54,7 +54,7 @@
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2021-04-01",
+            "apiVersion": "2022-09-01",
             "name": "[parameters('Storage account name')]",
             "location": "[parameters('location')]",
             "kind": "StorageV2",
@@ -65,7 +65,7 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
-            "apiVersion": "2021-04-01",
+            "apiVersion": "2022-09-01",
             "name": "[concat(parameters('Storage account name'), '/default/', parameters('Share filename'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('Storage account name'))]"
@@ -73,7 +73,7 @@
         },
         {
             "type": "Microsoft.ContainerInstance/containerGroups",
-            "apiVersion": "2021-03-01",
+            "apiVersion": "2022-09-01",
             "name": "[parameters('Name')]",
             "location": "[parameters('location')]",
             "dependsOn": [
