@@ -14,7 +14,7 @@ In order to manage the Dashlane audit logs of your business account, you need to
 
 ## How does it work ?
 
-The Docker image provided leverages the Dashlane CLI tool that will pull the audit logs and send them in your SIEM of choice. By default, when running the image in a container, the logs from DAY-1 will be retrieved, and new logs will be pulled every thiry minutes. To handle the logs, we included Fluentbit with this basic configuration file:
+The Docker image provided leverages the Dashlane CLI tool that will pull the audit logs and send them in your SIEM of choice. By default, when running the image in a container, the logs from DAY-1 will be retrieved, and new logs will be pulled every thirty minutes. To handle the logs, we included Fluentbit with this basic configuration file:
 
 ```
 [INPUT]
