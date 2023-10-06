@@ -46,8 +46,13 @@ Running those commands will create a simple container that pull your business ev
 
 ### Kubernetes
 
-Todo
+A helm chart is provided by the repository to deploy the service on a Kubernetes.
 
+```bash
+helm install dashlane-audit-logs dashlane-audit-logs/
+```
+
+Some example of configuration is provided in `example/`.
 
 ## SIEM configuration
 
@@ -151,7 +156,19 @@ You should now be able to access your Dashlane audit logs:
 ## Elasticsearch
 Work in progress
 
+Output configuration for Elasticsearch
 
+```
+[OUTPUT]
+  Name  es
+  Match *
+  Host host
+  Port 443
+  tls on
+  HTTP_User user
+  HTTP_Passwd pwd
+  Suppress_Type_Name On
+```
 
 ## Notes:
 All configuration are provided as is and designed to work out of the box. If you want customize them, you can consult the Fluentbit documentation: https://docs.fluentbit.io/manual/pipeline/outputs
