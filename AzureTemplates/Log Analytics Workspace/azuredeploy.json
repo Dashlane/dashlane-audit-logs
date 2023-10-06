@@ -1,0 +1,117 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Name": {
+            "type": "String",
+            "defaultValue": "dashlane-audit-logs-law",
+            "allowedValues": ["dashlane-audit-logs-law"]       
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+            "description": "Location of the container. We recommend to use the same value as the \"Region\" parameter."
+            }
+        },
+        "Dashlane team UUID": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Dashlane's team UUID"
+            },
+            "minLength": 36,
+            "maxLength": 36
+        },
+        "Dashlane team access key": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Dashlane's team access key"
+            },
+            "minLength": 16,
+            "maxLength": 16
+        },
+        "Dashlane team secret key": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Dashlane's team secret key"
+            },
+            "minLength": 64,
+            "maxLength": 64
+        },
+        "Workspace ID": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics Workspace ID"
+            },
+            "minLength": 36,
+            "maxLength": 36
+        },
+        "Shared key": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics shared key"
+            },
+            "minLength": 88,
+            "maxLength": 88
+        }
+
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2023-05-01",
+            "name": "[parameters('Name')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sku": "Standard",
+                "containers": [
+                    {
+                        "name": "[parameters('Name')]",
+                        "properties": {
+                            "image": "dashlane/audit-logs:latest",
+                            "ports": [],
+                            "environmentVariables": [
+                                {
+                                    "name": "DASHLANE_TEAM_UUID",
+                                    "value": "[parameters('Dashlane team UUID')]"
+                                },
+                                {
+                                    "name": "DASHLANE_TEAM_ACCESS_KEY",
+                                    "value": "[parameters('Dashlane team access key')]"
+                                },
+                                {
+                                    "name": "DASHLANE_TEAM_SECRET_KEY",
+                                    "value": "[parameters('Dashlane team secret key')]"
+                                },
+                                {
+                                    "name": "WORKSPACE_ID",
+                                    "value": "[parameters('Workspace ID')]"
+                                },
+                                {
+                                    "name": "SHARED_KEY",
+                                    "value": "[parameters('Shared key')]"
+                                }
+
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 1.5,
+                                    "cpu": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "diagnostics": {
+                "logAnalytics": {
+                    "logType": "ContainerInstanceLogs",
+                    "workspaceId": "[parameters('Workspace ID')]",
+                    "workspaceKey": "[parameters('Shared key')]"
+                }
+            },
+                "restartPolicy": "Always",
+                "osType": "Linux"
+            }
+        }
+    ]
+}
