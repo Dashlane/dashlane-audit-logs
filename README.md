@@ -27,7 +27,7 @@ The Docker image provided leverages the Dashlane CLI tool that will pull the aud
     Format json_lines
 ```
 
-To send the logs to a new destination, you need to enrich this configuration file template and add an **OUTPUT** section such as described on the following sections. To use your custom configuration file, you need to override the **$DASHLANE_CLI_FLUENTBIT_CONF** environment variable and set the path of your configuration file. The method to pass your file will depend on the plaform you use to run the image.
+To send the logs to a new destination, you need to enrich this configuration file template and add an **OUTPUT** section such as described on the following sections. To use your custom configuration file, you need to override the **DASHLANE_CLI_FLUENTBIT_CONF** environment variable and set the path of your configuration file. The method to pass your file will depend on the plaform you use to run the image.
 
 ## Accessing the logs
 
@@ -35,11 +35,24 @@ The first step to retrieve the audits logs is to run the custom image we provide
 
 This image can run on the platform of your choice. To make a simple test, you can deploy it with Docker by doing so:
 
+### Environment variables
+`DASHLANE_CLI_FLUENTBIT_CONF`
+- Path of the Fluentbit configuration file
+- Default to `/opt/fluent-bit.conf`
+
+`DASHLANE_CLI_RUN_DELAY`
+- Delay between each log pull
+- Default to `60` seconds
+
+`DASHLANE_TEAM_DEVICE_KEYS`
+- Secret key to authenticate against Dashlane servers as the team
+- [Documentation to generate the credentials](https://dashlane.github.io/dashlane-cli/business)
+
 ### Running in Docker
 
 ```
 docker pull dashlane/audit-logs
-docker run -e DASHLANE_TEAM_UUID=XXX -e DASHLANE_TEAM_ACCESS_KEY=XXX -e DASHLANE_TEAM_SECRET_KEY=XXX -it dashlane/audit-logs:latest
+docker run -e DASHLANE_TEAM_DEVICE_KEYS=XXX -it dashlane/audit-logs:latest
 ```
 Running those commands will create a simple container that pull your business every minutes and and print them on the stdout of the container.
 
