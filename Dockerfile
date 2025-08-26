@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 COPY src/entrypoint.sh /opt/entrypoint.sh
 COPY src/fluentbit-default.conf /opt/fluent-bit.conf
