@@ -1,7 +1,7 @@
 # Dashlane audit logs manager
 
 >**Notice**
-> We are undergoing scheduled security maintenance for the Dashlane CLI’s audit logs commands. During this time, you will not be able to access the audit logs via the CLI. We will restore service in September 2025.
+> We are undergoing scheduled security maintenance for the Dashlane CLI’s audit logs commands. During this time, you will not be able to access the audit logs via the CLI. We will restore service in November 2025.
 
 
 This projects allows you to retrieve your Dashlane's audit log and send them in the SIEM or storage solution of your choice, using Fluentbit. At the moment, we provide out of the box configurations for the following solutions:
