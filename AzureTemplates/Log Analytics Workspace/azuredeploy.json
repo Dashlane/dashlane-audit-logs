@@ -72,16 +72,8 @@
                             "ports": [],
                             "environmentVariables": [
                                 {
-                                    "name": "DASHLANE_TEAM_UUID",
-                                    "value": "[parameters('Dashlane team UUID')]"
-                                },
-                                {
-                                    "name": "DASHLANE_TEAM_ACCESS_KEY",
+                                    "name": "DASHLANE_ENROLLED_TEAM_DEVICE_KEYS",
                                     "value": "[parameters('Dashlane team access key')]"
-                                },
-                                {
-                                    "name": "DASHLANE_TEAM_SECRET_KEY",
-                                    "value": "[parameters('Dashlane team secret key')]"
                                 },
                                 {
                                     "name": "WORKSPACE_ID",

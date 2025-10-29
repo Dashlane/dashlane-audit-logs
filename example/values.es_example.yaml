@@ -23,12 +23,8 @@ config:
   env:
     - name: DASHLANE_CLI_RUN_DELAY
       value: "300"
-    - name: DASHLANE_TEAM_UUID
-      value: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-    - name: DASHLANE_TEAM_SECRET_KEY
+    - name: DASHLANE_ENROLLED_TEAM_DEVICE_KEYS
       value: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    - name: DASHLANE_TEAM_ACCESS_KEY
-      value: "xxxxxxxxxxxxxxxx"
   fluentbit:
     output: |
       [OUTPUT]

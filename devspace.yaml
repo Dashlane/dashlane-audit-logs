@@ -6,29 +6,28 @@ deployments:
     helm:
       values:
         containers:
-          - image: ubuntu:22.04
+          - image: ubuntu:24.04
 
 hooks:
   - command: |
-      apt-get update && apt-get install -y
-      apt-get install -y curl jq gpg
+      apt-get update && apt-get install -y curl jq gpg
       curl https://packages.fluentbit.io/fluentbit.key | gpg --dearmor > /usr/share/keyrings/fluentbit-keyring.gpg
       curl https://raw.githubusercontent.com/fluent/fluent-bit/master/install.sh | sh
-      curl https://github.com/Dashlane/dashlane-cli/releases/download/v6.2415.0/dcli-linux-x64 -L > /usr/local/bin/dcli
+      curl https://github.com/Dashlane/dashlane-cli/releases/download/v6.2544.0/dcli-linux-x64 -L > /usr/local/bin/dcli
       chmod a+x /usr/local/bin/dcli
     container:
-      imageSelector: ubuntu:22.04
+      imageSelector: ubuntu:24.04
     events: ["before:initialSync:my-dev"]
   - command: | 
       cp ./src/fluentbit-default.conf /opt/fluent-bit.conf
       chmod +x ./src/entrypoint.sh
     container:
-      imageSelector: ubuntu:22.04
+      imageSelector: ubuntu:24.04
     events: ["after:initialSync:my-dev"]
 
 dev:
   my-dev:
-    imageSelector: ubuntu:22.04
+    imageSelector: ubuntu:24.04
     attach: {}
     workingDir: /app
     command: ["/bin/bash"]
