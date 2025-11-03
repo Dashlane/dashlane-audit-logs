@@ -52,7 +52,7 @@ This image can run on the platform of your choice. To make a simple test, you ca
 
 ```
 docker pull dashlane/audit-logs
-docker run -e DASHLANE_ENROLLED_TEAM_DEVICE_KEYS=XXX -it dashlane/audit-logs:latest
+docker run -e DASHLANE_ENROLLED_TEAM_DEVICE_KEYS=XXX -it dashlane/audit-logs:2
 ```
 Running those commands will create a simple container that pull your business every minutes and and print them on the stdout of the container.
 
