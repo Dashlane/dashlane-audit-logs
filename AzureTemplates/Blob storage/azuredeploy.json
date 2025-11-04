@@ -84,7 +84,7 @@
                     {
                         "name": "[parameters('Name')]",
                         "properties": {
-                            "image": "dashlane/audit-logs:latest",
+                            "image": "dashlane/audit-logs:2",
                             "environmentVariables": [
                                 {
                                     "name": "DASHLANE_ENROLLED_TEAM_DEVICE_KEYS",

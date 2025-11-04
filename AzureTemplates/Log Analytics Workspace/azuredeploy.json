@@ -68,7 +68,7 @@
                     {
                         "name": "[parameters('Name')]",
                         "properties": {
-                            "image": "dashlane/audit-logs:latest",
+                            "image": "dashlane/audit-logs:2",
                             "ports": [],
                             "environmentVariables": [
                                 {

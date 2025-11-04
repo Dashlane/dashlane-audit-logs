@@ -8,7 +8,7 @@ image:
   repository: dashlane/audit-logs
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: latest
+  tag: "2"
 
 serviceAccount:
   # Specifies whether a service account should be created
