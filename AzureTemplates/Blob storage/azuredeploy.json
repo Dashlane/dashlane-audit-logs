@@ -26,29 +26,13 @@
             "defaultValue": "/dashlane",
             "allowedValues": ["/dashlane"]       
         },
-        "Dashlane team UUID": {
+        "Dashlane CLI team key": {
             "type": "secureString",
             "metadata": {
-                "description": "Dashlane's team UUID"
+                "description": "Dashlane's CLI team key"
             },
-            "minLength": 36,
-            "maxLength": 36
-        },
-        "Dashlane team access key": {
-            "type": "secureString",
-            "metadata": {
-                "description": "Dashlane's team access key"
-            },
-            "minLength": 16,
-            "maxLength": 16
-        },
-        "Dashlane team secret key": {
-            "type": "secureString",
-            "metadata": {
-                "description": "Dashlane's team secret key"
-            },
-            "minLength": 64,
-            "maxLength": 64
+            "minLength": 350,
+            "maxLength": 400
         }
     },
     "resources": [
@@ -88,7 +72,7 @@
                             "environmentVariables": [
                                 {
                                     "name": "DASHLANE_ENROLLED_TEAM_DEVICE_KEYS",
-                                    "value": "[parameters('Dashlane team access key')]"
+                                    "value": "[parameters('Dashlane CLI team key')]"
                                 },
                                 {
                                     "name": "DASHLANE_CLI_FLUENTBIT_CONF",
