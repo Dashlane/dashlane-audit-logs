@@ -10,7 +10,7 @@ RUN apt-get update && \
     curl https://raw.githubusercontent.com/fluent/fluent-bit/master/install.sh | sh && \
     chmod a+x /usr/local/bin/dcli
 
-RUN groupadd -g 61000 user && useradd -g 61000 -l -M -s /bin/false -u 61000 user
+RUN mkdir -p /home/user && groupadd -g 61000 user && useradd -g 61000 -l -M -s /bin/false -u 61000 user
 
 ENV DASHLANE_CLI_FLUENTBIT_CONF="/opt/fluent-bit.conf"
 ENV DASHLANE_CLI_RUN_DELAY=60
